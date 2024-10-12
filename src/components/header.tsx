@@ -11,7 +11,7 @@ const Header: React.FC = () => {
         </div>
 
       
-    <header className="bg-white w-full h-20 flex items-center justify-center space-x-36" style={{ color: '#5C5F6A' }}>
+    <header className="bg-white w-full h-20 sticky flex items-center justify-center space-x-36" style={{ color: '#5C5F6A' }}>
       <div>
          <Link to="/"> <img src="/images/Header.png" alt="Logo" className='cursor-pointer'/> </Link>
       </div>
