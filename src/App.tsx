@@ -8,6 +8,7 @@ import ShoppingCart from './pages/shoppingcart';
 import Profile from './pages/profile';
 import Header from './components/header';
 import Counter from './components/counter';
+import Footer from './components/footer';
 
 const App: React.FC = () => {
   return (
@@ -20,8 +21,9 @@ const App: React.FC = () => {
         <Route path="/contact" element={<Contact />} />
         <Route path="/shoppingcart" element={<ShoppingCart />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/counter" element={<Counter />} /> {/* Add a route for the Counter */}
+        <Route path="/counter" element={<Counter />} />
       </Routes>
+      <Footer />
     </Router>
   );
 };

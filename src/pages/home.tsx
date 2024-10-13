@@ -70,6 +70,48 @@ const Home: React.FC = () => {
         </div>
 
       </section>
+
+
+      <section className='w-full flex items-center justify-between px-32' style={{backgroundColor: '#F6F6F6', height: '304px'}}>
+        <div style={{width: '450px'}}>
+          <h1 className='text-2xl font-bold'>Browse Our Fashion Paradise!</h1>
+          <p className='text-sm' style={{ color: '#5C5F6A' }}>Step into a world of style and explore our diverse collection of clothing categories.</p>
+          <button className='text-white text-sm flex items-center justify-center rounded mt-12' style={{ backgroundColor: '#0E1422', width: '183px', height: '44px' }}>
+            <span> Start Browsing </span>
+            <img src="/images/ArrowRight.png" alt="right-arrow" className='pl-3' />
+          </button>
+        </div>
+
+        <div>
+        <img src="/images/Clothes_0.png" style={{ height: '311px', width: '225px' }} />
+        </div>
+      </section>
+
+
+      <section className='w-full flex flex-col items-center'>
+        <div className='flex text-center mt-40 gap-4'>
+          <button className='border border-solid border-gray-200 rounded-full' style={{width:'92px', height:'31px'}}> Featured </button>
+          <button className='font-light' style={{width:'92px', height:'31px', color:'#5C5F6A'}}> Latest </button>
+        </div>
+
+        <div className="grid grid-cols-4 gap-4 justify-between mt-12 mb-40">
+            {Clothes.slice(4, 8).map((clothes) => (
+            <Link to={`/items/${clothes.id}`} key={clothes.id}>
+              <div className="flex flex-col gap-2 items-start bg-white p-4">
+                <img src={clothes.image} alt={clothes.name} className="bg-gray-100 w-72" />
+                <span className="font-medium text-secondary">{clothes.name}</span>
+                <div className="flex gap-3 items-center">
+                  <span className={`text-secondary font-medium border border-gray-300 px-3 py-1 rounded-3xl ${clothes.instock ? 'bg-white' : 'bg-red-100'}`}>
+                    {clothes.instock ? 'IN STOCK' : 'OUT OF STOCK'}
+                  </span>
+                  <span className="text-gray-400 font-normal">${clothes.price}</span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+      </section>
       
     </main>
   );
