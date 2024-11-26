@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Clothes } from '../components/clothes';
 import Counter from '../components/counter';
-import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
+import { ClothesTypes } from '../types/clothestypes';
+import { ProductApi } from "../types/clothesapitypes";
+
 
 const Product: React.FC = () => {
 
@@ -11,19 +14,44 @@ const Product: React.FC = () => {
   const { pathname } = location;
 
   const { id } = useParams<{ id: string }>();
-  const product = Clothes.find(item => item.id.toString() === id);
 
   const [selectedColor, setSelectedColor] = useState <string | null> (null);
 
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState <string | null> (null);
   const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
 
-  const [selectedButton, setSelectedButton] = useState <string | null>(null);
+  const [selectedButton, setSelectedButton] = useState <string | null> (null);
 
-  useEffect(()=> {
+  const [products, setProducts] = useState<(ClothesTypes | ProductApi)[]>([]);
+
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch('https://fakestoreapi.com/products');
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}`);
+        }
+
+        const data: ProductApi[] = await response.json();
+
+        const formattedData = data.map((product) => ({...product, instock: true}));
+
+        setProducts([...Clothes, ...formattedData]);
+      }
+       catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+    useEffect(()=> {
       window.scrollTo(0, 0)
   },[pathname])
 
+  const product = products.find(item => item.id.toString() === id);
 
 
   if (!product) {
@@ -32,7 +60,7 @@ const Product: React.FC = () => {
 
   return (    
     <main className='mx-auto max-w-[1440px] px-5'>
-      <section className='w-full gap-16' style={{ backgroundColor: '#FFF', paddingBottom: '200px' }}>
+      <section className='w-full gap-16' style={{ backgroundColor: '#FFF', paddingBottom: '120px' }}>
           <div className='flex items-center gap-3 mt-8 mx-28'>
             <span className='text-slate-500'> Ecommerce </span>
             <img src="/images/Vector-right.png" alt="right-arrow" className='w-2 h-3' />
@@ -41,13 +69,13 @@ const Product: React.FC = () => {
 
           <div className='mx-28 flex items-center justify-center gap-4' style={{ width:'1092px', height: '574px', marginTop: '30px' }}>
             <div className='flex items-center justify-center flex-col py-8 px-8' style={{ backgroundColor: '#F6F6F6', width:'574px', height: '574px' }}>
-                <img src={product.image} alt={product.name} style={{ width:'374.4px', height:'471px' }}/>
+                <img src={product.image} alt={product.title} style={{ width:'374.4px', height:'471px' }}/>
                 <img src="/images/Dots.png" alt="dots" />
             </div>
 
             <div className='flex items-start flex-col' style={{ width:'574px', height: '574px' }}>
               <div className='ps-28 items-start'>
-                  <h1 className='text-2xl font-bold ms-1'>{product.name}</h1>
+                  <h1 className='text-2xl font-bold ms-1'>{product.title}</h1>
 
                   <div className='flex gap-2 mt-3 mb-6'>
                         <div className='rounded-full flex items-center justify-center gap-3' style={{ backgroundColor: '#F6F6F6', width:'167px', height:'28px' }}>
@@ -107,7 +135,7 @@ const Product: React.FC = () => {
 
                   <div className='flex flex-col ms-2 mt-8'>
                       <span className='text-xs font-medium text-slate-500'> QUANTITY </span> 
-                      <div>
+                      <div className='rounded-md'>
                         <Counter/>
                       </div>
                   </div>
@@ -121,61 +149,59 @@ const Product: React.FC = () => {
                         <img src="/images/Heart.png" alt="Heart" />
                      </button>
                   </div>
-                 
-
                   <span className='text-xs font-medium text-slate-500 ms-2'>— Free shipping on orders $100+</span>
-                 
-                  
-
- 
               </div>
             </div>
           </div>
       </section>
 
+
+
+
       <section className='w-full gap-16' style={{ backgroundColor: '#FFF', paddingBottom: '120px' }}>
-        <div className='flex items-center gap-3 mt-8 mx-28'> 
+        <div className='flex items-center gap-3 mt-8 mx-28'>
 
-            <div className='w-60 h-24 flex flex-col justify-between'>
 
-              <button className={`flex items-center gap-2 w-60 h-10 rounded-md ps-6 bg-white transition duration-150 hover:bg-[#F6F6F6] active:bg-white ${selectedButton === "details" ? 'bg-[#F6F6F6]' : ''}`} onClick={() => setSelectedButton("details")}>                  
-                  <img src="/images/3Dots.png" />
-                  <span>Details</span>
-                </button>
+          <div className='w-60 h-24 flex flex-col justify-between'>
+            <button className={`flex items-center gap-2 w-60 h-10 rounded-md ps-6 bg-white transition duration-150 hover:bg-[#F6F6F6] active:bg-white ${selectedButton === "details" ? 'bg-[#F6F6F6]' : ''}`} onClick={() => setSelectedButton("details")}>
+              <img src="/images/3Dots.png"/>
+              <span> Details </span>
+            </button>
 
-                <button className={`flex items-center gap-2 w-60 h-10 rounded-md ps-6 bg-white transition duration-150 hover:bg-[#F6F6F6] active:bg-white ${selectedButton === "reviews" ? 'bg-[#F6F6F6]' : ''}`} onClick={() => setSelectedButton("reviews")}>                  
-                  <img src="/images/EmptyStar.png" />
-                  <span>Reviews</span>
-                </button>
-            </div>
+            <button className={`flex items-center gap-2 w-60 h-10 rounded-md ps-6 bg-white transition duration-150 hover:bg-[#F6F6F6] active:bg-white ${selectedButton === "reviews" ? 'bg-[#F6F6F6]' : ''}`} onClick={() => setSelectedButton("reviews")}>
+              <img src="/images/EmptyStar.png" />
+              <span> Reviews </span>
+            </button>
+          </div>
 
-            <div>
-              {selectedButton === "details" ? (
-                <div className='ms-8 flex flex-col' style={{ width: '727px' }}> 
-                <h1 className='font-medium mb-6'> Detail </h1>
 
-                <div className='flex flex-col'>
-                    <span className='text-s font-normal text-slate-400'> 
-                      Elevate your everyday style with our Men's Black T-Shirts, the ultimate wardrobe essential for modern men. 
-                      Crafted with meticulous attention to detail and designed for comfort,
-                      these versatile black tees are a must-have addition to your collection.
-                    </span>
-                    <span className='text-s font-normal text-slate-400'>
-                      The classic black color never goes out of style. Whether you're dressing up for a special occasion or keeping it casual, 
-                      these black t-shirts are the perfect choice, effortlessly complementing any outfit.
-                    </span>
-                </div>
+          <div>
+            {selectedButton === "details" ? (
+               <div className='ms-8 flex flex-col' style={{ width: '727px' }}> 
+                  <h1 className='font-medium mb-6'> Detail </h1>
 
-                <ul className='list-disc text-s font-normal text-slate-400 mt-16 ms-6'>
-                  <li> Premium Quality </li>
-                  <li> Versatile Wardrobe Staple </li>
-                  <li> Available in Various Sizes </li>
-                  <li> Tailored Fit </li>
-                </ul>
+                  <div className='flex flex-col'>
+                      <span className='text-s font-normal text-slate-400'> 
+                        Elevate your everyday style with our Men's Black T-Shirts, the ultimate wardrobe essential for modern men. 
+                        Crafted with meticulous attention to detail and designed for comfort,
+                        these versatile black tees are a must-have addition to your collection.
+                      </span>
+                      <span className='text-s font-normal text-slate-400'>
+                        The classic black color never goes out of style. Whether you're dressing up for a special occasion or keeping it casual, 
+                        these black t-shirts are the perfect choice, effortlessly complementing any outfit.
+                      </span>
+                  </div>
 
-             </div>
-              ) :
-              <div className='ms-8' style={{ width: '727px' }}>
+                  <ul className='list-disc text-s font-normal text-slate-400 mt-16 ms-6'>
+                    <li> Premium Quality </li>
+                    <li> Versatile Wardrobe Staple </li>
+                    <li> Available in Various Sizes </li>
+                    <li> Tailored Fit </li>
+                  </ul>
+
+               </div>
+            ) : 
+            <div className='ms-8' style={{ width: '727px' }}>
             <div>
               <div className="flex flex-col gap-4">
                 <h2 className='font-medium mb-2'>Reviews</h2>
@@ -199,7 +225,6 @@ const Product: React.FC = () => {
                     <img src="/images/review-stars.png" alt="review-stars" className="ml-3" />
                   </div>
 
-          
                   <div className='flex items-start mt-14' style={{ width: '727px' }}>
                     <img src="/images/Avatar.png" alt="avatar" className="mr-3" />
                     <div className='flex flex-col flex-grow'>
@@ -227,23 +252,28 @@ const Product: React.FC = () => {
               </div>
             </div>
           </div>
-              }
-            </div>
-        </div>
-        </section>
+          
+            }
+          </div>
 
-              <section className='w-full flex flex-col ms-2'>
+
+        </div>
+      </section>
+
+
+
+      <section className='w-full flex flex-col ms-2'>
         <div className='flex flex-col text-start mb-6 ms-6'>
           <h1 className='text-2xl font-bold mt-3 mb-3'>You might also like</h1>
           <span className='text-xs ms-1' style={{ color: '#878A92' }}>SIMILAR PRODUCTS</span>
         </div>
 
-        <div className="grid grid-cols-4 gap-4 justify-between mt-24 mb-40">
+        <div className="grid grid-cols-4 gap-4 justify-between mt-14 mb-40">
             {Clothes.slice(0, 4).map((clothes) => (
             <Link to={`/items/${clothes.id}`} key={clothes.id}>
               <div className="flex flex-col gap-2 items-start bg-white p-4">
-                <img src={clothes.image} alt={clothes.name} className="bg-gray-100 w-72" />
-                <span className="font-medium text-secondary">{clothes.name}</span>
+                <img src={clothes.image} alt={clothes.title} className="bg-gray-100 w-72" />
+                <span className="font-medium text-secondary">{clothes.title}</span>
                 <div className="flex gap-3 items-center">
                   <span className={`text-secondary font-medium border border-gray-300 px-3 py-1 rounded-3xl ${clothes.instock ? 'bg-white' : 'bg-red-100'}`}>
                     {clothes.instock ? 'IN STOCK' : 'OUT OF STOCK'}
@@ -256,7 +286,6 @@ const Product: React.FC = () => {
         </div>
 
       </section>
-
     </main>
   );
 };
